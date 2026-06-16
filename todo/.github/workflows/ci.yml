@@ -1,0 +1,96 @@
+# TP Seance 18 - Integration continue (CI) avec GitHub Actions
+#
+# Placez ce fichier dans .github/workflows/ a la RACINE de votre depot.
+# Votre mission : completer les TODO (S18-n) pour obtenir un pipeline qui, a
+# chaque push et pull request, verifie la qualite du code puis entraine la
+# baseline. Le squelette est fonctionnel : tant qu'un TODO n'est pas fait,
+# l'etape affiche un rappel (echo) au lieu d'executer la vraie commande.
+#
+# Rappels (projet todo, package mlproject) :
+#   uv sync --extra dev          installe le projet + les outils dev
+#   uv run ruff check mlproject  lint
+#   uv run mypy mlproject        types
+#   uv run pytest                tests (issus des seances 11 et 15)
+#   uv run python -m mlproject.train   entrainement de la baseline
+name: CI
+
+# TODO (S18-1) : declencher le workflow sur `push` ET `pull_request`, plus un
+# lancement manuel (`workflow_dispatch`). Remplacez le bloc `on:` ci-dessous.
+on:
+  workflow_dispatch:
+
+# Annule un run en cours si on repousse sur la meme ref (economise des minutes).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Permissions minimales par defaut.
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Qualite : lint (ruff) + types (mypy) + tests (pytest). Le "quality gate".
+  # ---------------------------------------------------------------------------
+  quality:
+    name: Qualite (lint + types + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du depot
+        uses: actions/checkout@v4
+
+      - name: Installation de uv (avec cache)
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Installation des dependances (projet + dev)
+        # TODO (S18-2) : remplacez l'echo par la commande qui installe le projet
+        # et les outils dev (ruff, mypy, pytest).
+        run: 'echo "TODO S18-2 -> uv sync --extra dev"'
+
+      - name: Lint (ruff)
+        # TODO (S18-3) : verifiez le style du package mlproject avec ruff.
+        run: 'echo "TODO S18-3 -> uv run ruff check mlproject"'
+
+      - name: Types (mypy)
+        # TODO (S18-4) : verifiez les types du package mlproject avec mypy.
+        run: 'echo "TODO S18-4 -> uv run mypy mlproject"'
+
+      - name: Tests (pytest)
+        # TODO (S18-5) : lancez la suite de tests.
+        run: 'echo "TODO S18-5 -> uv run pytest"'
+
+  # ---------------------------------------------------------------------------
+  # 2. Entrainement : entraine la baseline et publie le modele en artefact
+  #    (illustration du "Continuous Training").
+  # ---------------------------------------------------------------------------
+  train:
+    name: Entrainement (Continuous Training)
+    runs-on: ubuntu-latest
+    # TODO (S18-6) : ce job ne doit s'executer QUE si le job `quality` est vert.
+    # Ajoutez la dependance entre jobs (mot-cle `needs`).
+    steps:
+      - name: Checkout du depot
+        uses: actions/checkout@v4
+
+      - name: Installation de uv (avec cache)
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Installation des dependances
+        run: uv sync
+
+      - name: Donnees + entrainement de la baseline
+        # TODO (S18-7) : preparez les donnees puis entrainez la baseline.
+        # Adaptez a votre projet, par exemple : uv run python -m mlproject.train
+        # (precede de votre etape de preparation des donnees si necessaire).
+        run: 'echo "TODO S18-7 -> preparer les donnees puis entrainer la baseline"'
+
+      - name: Publication du modele en artefact
+        # TODO (S18-8) : publiez models/model.joblib en artefact telechargeable
+        # avec l'action actions/upload-artifact (name: model, path: models/model.joblib).
+        run: 'echo "TODO S18-8 -> actions/upload-artifact pour models/model.joblib"'

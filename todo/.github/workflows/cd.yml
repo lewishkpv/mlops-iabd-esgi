@@ -1,0 +1,61 @@
+# TP Seance 19 - Livraison continue (CD) avec GitHub Actions
+#
+# Placez ce fichier dans .github/workflows/ a la RACINE de votre depot.
+# Votre mission : completer les TODO (S19-n) pour que, sur la branche main et
+# sur les tags de version, l'image Docker de l'API soit construite et poussee
+# sur le registre de conteneurs de GitHub (GHCR : ghcr.io).
+#
+# Rappels :
+#   - GHCR s'authentifie avec le jeton automatique secrets.GITHUB_TOKEN et
+#     l'utilisateur github.actor.
+#   - Pousser un package requiert la permission `packages: write`.
+#   - Le Dockerfile de l'API du projet todo est dans docker/Dockerfile.api.
+name: CD
+
+# TODO (S19-1) : declencher sur push de la branche `main` ET sur les tags de
+# version `vX.Y.Z` (ex: type `v1.0.0`). Remplacez le bloc `on:` ci-dessous.
+on:
+  workflow_dispatch:
+
+# Pas d'annulation en cours : on ne veut pas interrompre une livraison.
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-push:
+    name: Build & push de l'image API (GHCR)
+    runs-on: ubuntu-latest
+    # TODO (S19-2) : autorisez ce job a ecrire des packages sur GHCR.
+    # Ajoutez un bloc `permissions:` avec `packages: write` (et `contents: read`).
+    steps:
+      - name: Checkout du depot
+        uses: actions/checkout@v4
+
+      - name: Mise en place de Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Connexion a GHCR
+        # TODO (S19-3) : connectez-vous a ghcr.io avec l'action docker/login-action
+        # (registry: ghcr.io, username: github.actor,
+        #  password: secrets.GITHUB_TOKEN). Remplacez cette etape `run` par
+        # l'action `uses:` correspondante.
+        run: 'echo "TODO S19-3 -> docker/login-action vers ghcr.io"'
+
+      - name: Calcul des tags et labels
+        id: meta
+        # TODO (S19-4) : calculez les tags avec l'action docker/metadata-action.
+        # images: ghcr.io/${{ github.repository }}/mlproject-api
+        # tags : `latest` sur la branche par defaut + le SHA du commit + la
+        #        version semantique sur les tags (type=semver).
+        run: 'echo "TODO S19-4 -> docker/metadata-action"'
+
+      - name: Build & push de l'image
+        # TODO (S19-5) : construisez et poussez l'image avec docker/build-push-action.
+        # file: docker/Dockerfile.api, push: true,
+        # tags/labels: steps.meta.outputs.tags / steps.meta.outputs.labels,
+        # cache-from/cache-to: type=gha. Remplacez cette etape `run` par l'action.
+        run: 'echo "TODO S19-5 -> docker/build-push-action (push true)"'
