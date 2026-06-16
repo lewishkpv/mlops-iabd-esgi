@@ -69,10 +69,46 @@ ConfusionMatrixDisplay.from_predictions(y_test, preds)
 plt.savefig("confusion.png"); mlflow.log_artifact("confusion.png")
 ```
 
+## Partie 2 - Centraliser la configuration et tracer le dataset (`tracking.py`)
+Répéter `set_tracking_uri` + `set_experiment` dans chaque script devient vite redondant.
+Le fichier `todo/mlproject/tracking.py` regroupe cette configuration et ajoute la
+**traçabilité des données** (dataset lineage). Complétez les `TODO S5-8` et `S5-9`.
+
+### `setup_experiment()` (`TODO S5-8`)
+Pointez le tracking, sélectionnez l'expérience et appliquez-lui sa description et ses tags
+(lus depuis `config.py`) :
+```python
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+experiment = mlflow.set_experiment(MLFLOW_EXPERIMENT)
+client = mlflow.MlflowClient()
+if MLFLOW_EXPERIMENT_DESCRIPTION:
+    client.set_experiment_tag(experiment.experiment_id, "mlflow.note.content",
+                              MLFLOW_EXPERIMENT_DESCRIPTION)
+for key, value in MLFLOW_EXPERIMENT_TAGS.items():
+    client.set_experiment_tag(experiment.experiment_id, key, value)
+```
+La description (`mlflow.note.content`) et les tags sont visibles dans l'onglet de
+l'expérience, dans l'UI.
+
+### `log_dataset()` (`TODO S5-9`)
+Rattachez le jeu de données au run courant (source, schéma, profil), visible dans
+l'onglet **Datasets** :
+```python
+dataset = mlflow.data.from_pandas(df, source=str(DATA_PATH), targets=TARGET, name=name)
+mlflow.log_input(dataset, context=context)   # context = "training", "evaluation"...
+```
+
+### Utiliser le helper
+Dans `train()`, remplacez le `set_tracking_uri`/`set_experiment` de l'étape 2 par
+`setup_experiment()`, et appelez `log_dataset(df, context="training")` à l'intérieur du
+run. Relancez un entraînement : l'expérience a maintenant une description, des tags, et le
+run référence le dataset.
+
 ## Critères de réussite
 - [ ] Chaque exécution crée un run visible dans l'UI sous l'expérience `classification-baseline`.
 - [ ] Params et métriques sont consultables et comparables entre runs.
 - [ ] Le modèle est récupérable depuis l'onglet *Artifacts* d'un run.
+- [ ] L'expérience porte une description et des tags ; le run référence un dataset (onglet *Datasets*).
 
 ## Pour aller plus loin (préparation S6)
 Activez `mlflow.sklearn.autolog()` avant le `fit` et observez ce qui est capturé

@@ -71,6 +71,39 @@ Testez le garde-fou en montant temporairement `QUALITY_THRESHOLD` à `0.99`.
 - [ ] `check_quality` lit bien la métrique poussée par `train` (XCom).
 - [ ] Un seuil trop haut fait échouer `check_quality` (et lui seul).
 
+## Partie 2 - Un second DAG : prévisions quotidiennes (`predictions_dag.py`)
+Au-delà du ré-entraînement, on veut **planifier l'envoi de prévisions** à l'API : chaque
+jour, on envoie un lot de clients à `/predict`. Chaque appel est journalisé par l'API
+(table `predictions`), ce qui simule un trafic de production et alimente la boucle de
+feedback. Le squelette est `todo/dags/predictions_dag.py` (marqueurs `TODO S17-6` à `S17-8`).
+
+**Pré-requis** : l'API doit être joignable via `API_URL` (`http://api:8000` en docker).
+Lancez donc la stack qui expose l'API en plus d'Airflow.
+
+### Échantillonner les données (`TODO S17-6`)
+Dans `task_send_predictions`, après avoir retiré la cible :
+```python
+sample = features.sample(n=N_PREDICTIONS)
+```
+
+### Envoyer les prévisions (`TODO S17-7`)
+```python
+with httpx.Client(base_url=API_URL, timeout=10.0) as client:
+    client.get("/health").raise_for_status()
+    for _, row in sample.iterrows():
+        payload = json.loads(row.to_json())   # types JSON natifs (pas de numpy)
+        client.post("/predict", json=payload).raise_for_status()
+```
+
+### Planifier à 10h (`TODO S17-8`)
+```python
+schedule="0 10 * * *"   # tous les jours à 10h
+```
+
+### Exécuter & observer
+Activez le DAG `daily_predictions` dans l'UI, déclenchez-le, puis vérifiez côté API que les
+prévisions ont bien été journalisées (endpoint `/predictions` ou table `predictions`).
+
 ## Pour aller plus loin
 Ajoutez une tâche d'enregistrement du modèle dans le MLflow Registry après `check_quality`,
 et une notification (e-mail / Slack) en cas d'échec via un *callback* `on_failure_callback`.
