@@ -58,7 +58,7 @@ def _parse_tags(raw: str) -> dict[str, str]:
 
 MLFLOW_EXPERIMENT_TAGS = _parse_tags(os.getenv("MLFLOW_EXPERIMENT_TAGS", "course=mlops"))
 
-# Seuils de la porte qualite (evaluate.py, TP S4) : modele rejete si en dessous.
+# Seuils de la porte qualite (evaluate.py, TP S11) : modele rejete si en dessous.
 EVAL_ROC_AUC_MIN = float(os.getenv("EVAL_ROC_AUC_MIN", "0.65"))
 EVAL_F1_MIN = float(os.getenv("EVAL_F1_MIN", "0.55"))
 

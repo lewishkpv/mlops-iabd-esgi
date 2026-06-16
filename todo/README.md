@@ -55,7 +55,7 @@ todo/
     tracking.py            squelette config MLflow partagee + dataset lineage <- TP S5
     train_optuna.py        squelette optimisation Optuna + Registry    <- TP S6
     train_models.py        squelette GridSearchCV + SHAP               <- TP S7
-    evaluate.py            squelette evaluation + porte qualite        <- TP S4
+    evaluate.py            squelette evaluation + porte qualite        <- TP S11
     api.py                 squelette API FastAPI                       <- TP S12
   scripts/predict_client.py  squelette client de test de l'API         <- TP S15
   frontend/app.py          squelette frontend Streamlit                <- TP S14 bis
@@ -72,15 +72,15 @@ todo/
 | Seance | Enonce                          | Fichier a completer            | Objectif                                  |
 |--------|---------------------------------|--------------------------------|-------------------------------------------|
 | S0     | `tp/TP_S0_projet_personnel.md`  | `mlproject/config.py`, `pyproject.toml` | Brancher votre dataset           |
-| S4     | (Reproductibilite & Validation) | `mlproject/evaluate.py`        | Evaluation auto + porte qualite           |
 | S5     | `tp/TP_S5_mlflow.md`            | `mlproject/train.py`, `tracking.py` | Suivi d'experiences MLflow           |
 | S6     | `tp/TP_S6_optuna.md`           | `mlproject/train_optuna.py`    | Optimisation Optuna + Model Registry      |
 | S7     | `tp/TP_S7_automl_shap.md`      | `mlproject/train_models.py`    | Comparaison de modeles (GridSearchCV) + SHAP |
 | S8     | `tp/TP_S8_docker.md`           | `docker/Dockerfile.train`      | Conteneuriser l'entrainement              |
+| S11    | `tp/TP_S11_tests_modele.md`    | `mlproject/evaluate.py`        | Evaluation auto + porte qualite           |
 | S12    | `tp/TP_S12_fastapi.md`         | `mlproject/api.py`             | Exposer le modele via une API FastAPI     |
 | S14    | `tp/TP_S14_docker_compose.md`  | `docker-compose.yml`           | Orchestrer la stack                       |
 | S14bis | `tp/TP_S14_bis_streamlit.md`   | `frontend/app.py`              | Frontend de test                          |
-| S15    | (Tests de l'API)                | `scripts/predict_client.py`    | Tester l'API (client de previsions)       |
+| S15    | `tp/TP_S15_tests_api.md`        | `scripts/predict_client.py`    | Tester l'API (client de previsions)       |
 | S17    | `tp/TP_S17_airflow.md`         | `dags/retrain_dag.py`, `dags/predictions_dag.py` | Planifier re-entrainement + previsions |
 
 Toutes les commandes s'executent depuis la racine du projet avec `PYTHONPATH=todo`

@@ -1,11 +1,12 @@
 """Evaluation automatisee et validation du modele (squelette).
 
-Seance 4 - TP Reproductibilite & Validation
+Seance 11 - TP Tests Donnees & Modele
     `mlflow.models.evaluate` calcule en une passe un ensemble de metriques et
     d'artefacts (matrice de confusion, courbes ROC / precision-rappel) sur un
     jeu d'evaluation. `mlflow.validate_evaluation_results` applique ensuite une
     porte qualite : le modele est rejete (exception) si une metrique passe sous
-    son seuil. Completez les TODO (S4-1, S4-2, S4-3).
+    son seuil. Completez les TODO (S11-1, S11-2, S11-3).
+    Pre-requis : un modele enregistre au Model Registry (Seances 5-6).
 
 Le jeu d'evaluation est logue comme dataset MLflow (tracabilite).
 
@@ -29,11 +30,12 @@ from mlproject.config import (
     DATA_PATH,
     EVAL_F1_MIN,
     EVAL_ROC_AUC_MIN,
+    MLFLOW_EXPERIMENT,
+    MLFLOW_TRACKING_URI,
     MODEL_NAME,
     TARGET,
 )
 from mlproject.data import load_data, split
-from mlproject.tracking import setup_experiment
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -71,7 +73,7 @@ def build_thresholds() -> dict[str, MetricThreshold]:
     dict of str to MetricThreshold
         Seuils minimaux sur ``roc_auc`` et ``f1_score``.
     """
-    # TODO (S4-1) : retourner {
+    # TODO (S11-1) : retourner {
     #     "roc_auc": MetricThreshold(threshold=EVAL_ROC_AUC_MIN, greater_is_better=True),
     #     "f1_score": MetricThreshold(threshold=EVAL_F1_MIN, greater_is_better=True),
     # }
@@ -101,12 +103,14 @@ def evaluate_model(model_uri: str | None = None, validate: bool = True):
     eval_df = x_test.copy()
     eval_df[TARGET] = y_test.values
 
-    setup_experiment()
+    # Configuration du tracking (inline, comme train_models / train_optuna).
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    mlflow.set_experiment(MLFLOW_EXPERIMENT)
     model_uri = model_uri or latest_model_uri()
     logger.info("Evaluation de %s", model_uri)
 
     with mlflow.start_run(run_name="evaluate"):
-        # TODO (S4-2) : dans le run courant
+        # TODO (S11-2) : dans le run courant
         #   a) tracabilite -> logger le jeu d'evaluation comme dataset MLflow :
         #        dataset = mlflow.data.from_pandas(eval_df, source=str(DATA_PATH),
         #                                          targets=TARGET, name="eval")
@@ -117,7 +121,7 @@ def evaluate_model(model_uri: str | None = None, validate: bool = True):
         #        logger.info("f1_score=%.3f roc_auc=%.3f",
         #                    result.metrics["f1_score"], result.metrics["roc_auc"])
         #
-        # TODO (S4-3) : si validate, appliquer la porte qualite :
+        # TODO (S11-3) : si validate, appliquer la porte qualite :
         #        mlflow.validate_evaluation_results(build_thresholds(), result)
         #   (leve une exception si un seuil n'est pas atteint)
         #
