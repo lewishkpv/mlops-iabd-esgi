@@ -57,6 +57,11 @@ airflow-webserver.pid
 standalone_admin_password.txt
 
 # ==============================================================================
+# Notation TP (local uniquement, jamais commite/pushe)
+# ==============================================================================
+notation-tp/
+
+# ==============================================================================
 # Donnees (decommentez si vos jeux de donnees ne doivent pas etre versionnes)
 # ==============================================================================
 # data/*.csv

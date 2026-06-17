@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 
 import httpx
 
@@ -50,20 +51,28 @@ def main() -> None:
 
     payloads = build_payloads()
 
-    with httpx.Client(base_url=args.url, timeout=10.0) as client:
-        # TODO (S15-1) : appeler GET /health et logger le code + la reponse JSON
-        #   health = client.get("/health")
-        #   logger.info("GET /health -> %s %s", health.status_code, health.json())
+    try:
+        with httpx.Client(base_url=args.url, timeout=10.0) as client:
+            # TODO (S15-1) : appeler GET /health et logger le code + la reponse JSON
+            #   health = client.get("/health")
+            #   logger.info("GET /health -> %s %s", health.status_code, health.json())
 
-        # TODO (S15-2) : pour chaque payload, appeler POST /predict et logger la
-        #   reponse ; puis appeler GET /model-info et logger sa reponse.
-        #   for i, payload in enumerate(payloads):
-        #       response = client.post("/predict", json=payload)
-        #       logger.info("POST /predict (#%d) -> %s %s", i, response.status_code,
-        #                   response.json())
-        #   info = client.get("/model-info")
-        #   logger.info("GET /model-info -> %s %s", info.status_code, info.json())
-        raise NotImplementedError
+            # TODO (S15-2) : pour chaque payload, appeler POST /predict et logger la
+            #   reponse ; puis appeler GET /model-info et logger sa reponse.
+            #   for i, payload in enumerate(payloads):
+            #       response = client.post("/predict", json=payload)
+            #       logger.info("POST /predict (#%d) -> %s %s", i, response.status_code,
+            #                   response.json())
+            #   info = client.get("/model-info")
+            #   logger.info("GET /model-info -> %s %s", info.status_code, info.json())
+            raise NotImplementedError
+    except httpx.ConnectError:
+        logger.error(
+            "Impossible de joindre l'API sur %s : verifiez qu'elle est demarree "
+            "(make api ou uvicorn mlproject.api:app --reload).",
+            args.url,
+        )
+        sys.exit(1)
 
 
 if __name__ == "__main__":
